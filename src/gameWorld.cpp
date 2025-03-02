@@ -140,11 +140,14 @@ void gameWorld::generateWorld()
                 case 10:
                     // Relikt Feld
                     this->m_gameWorld[i][j] = this->m_relicField;
-                    this->m_relicCount++;
+                    if(i != 0 || j != 0)
+                        this->m_relicCount++; // Sonst kann auf 0,0 Relikt sein
                     break;
             }
         }
     }
+    if(this->m_relicCount == 0)
+        this->m_gameWorld[4][4] = this->m_relicField;
 }
 
 // Printet Gameworld in Konsole

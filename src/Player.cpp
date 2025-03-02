@@ -49,6 +49,7 @@ void Player::playerMovement(gameWorld& world)
     char inputDirection;
     while(1)
     {
+        this->printPlayerStats(world);
         std::cout<<"Bewegen mit WASD, BEENDEN mit X"<<std::endl;
         std::cin>> inputDirection;
         inputDirection = std::tolower(inputDirection); // Kleinbuchstaben
@@ -71,13 +72,17 @@ void Player::playerMovement(gameWorld& world)
         if(this->m_hitPoints <= 0)
         {
             system("clear");
-            std::cout << RED << "YOU DIED" << COLOR_RESET <<std::endl;
+            std::cout << RED << "            YOU DIED" << COLOR_RESET <<std::endl;
+            std::cout << std::endl;
+            this->printPlayerStats(world);
             return;
         }
         if(this->m_relicPoints == world.getRelicCount())
         {
             system("clear");
-            std::cout << YELLOW << "VICTORY ACHIEVED" << COLOR_RESET <<std::endl;
+            std::cout << YELLOW << "         VICTORY ACHIEVED" << COLOR_RESET << std::endl;
+            std::cout << std::endl;
+            this->printPlayerStats(world);
             return;
         }
     }
@@ -108,4 +113,23 @@ void Player::changePlayerPosition(char inputDirection, gameWorld& world)
     world.setEmptyField(currentHeroX, currentHeroY); // Felder auf leer setzeb
     world.newFieldEffect(world.getFieldType(newHeroX, newHeroY), *this); // Effekt der neuen Position
     world.setHeroPosition(newHeroX, newHeroY); // Aktualisiert Spieler auf neue Position
+}
+
+void Player::printPlayerStats(gameWorld& world)
+{
+    std::cout << BLUE   << "==================================" << COLOR_RESET << std::endl;
+    std::cout << GREEN  << "         PLAYER STATS             " << COLOR_RESET << std::endl;
+    std::cout << BLUE   << "==================================" << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Health: " << COLOR_RESET;
+    if(m_hitPoints <= 2)
+        std::cout << RED;
+    else
+        std::cout << GREEN;
+    std::cout << m_hitPoints << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Relics Collected: " << COLOR_RESET
+              << GREEN << m_relicPoints << "/"<< world.getRelicCount() << COLOR_RESET << std::endl;
+
+    std::cout << BLUE   << "==================================" << COLOR_RESET << std::endl;
 }

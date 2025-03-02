@@ -18,7 +18,7 @@ class Player
 
         // restliche Methoden
         void playerMovement(gameWorld& world);
-        //void printStats();
+        void printPlayerStats(gameWorld& world);
 
     private:
         int m_hitPoints;

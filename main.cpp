@@ -12,7 +12,5 @@ int main()
 
     Player player;
     player.playerMovement(world);
-
-    //player.printstats();
     return 0;
 }
