@@ -1,0 +1,15 @@
+# depslib dependency file v1.0
+1740585573 source:/home/stefan/Code/Objektorientiertes Programmieren Labor/UebungsBeispiele/OasenCrawler/src/Player.cpp
+	"Player.h"
+
+1740586166 /home/stefan/Code/Objektorientiertes Programmieren Labor/UebungsBeispiele/OasenCrawler/include/Player.h
+
+1740587136 source:/home/stefan/Code/Objektorientiertes Programmieren Labor/UebungsBeispiele/OasenCrawler/main.cpp
+	<iostream>
+	<cstdlib>
+
+1740587151 source:/home/stefan/Code/Objektorientiertes Programmieren Labor/UebungsBeispiele/OasenCrawler/src/gameWorld.cpp
+	"gameWorld.h"
+
+1740586214 /home/stefan/Code/Objektorientiertes Programmieren Labor/UebungsBeispiele/OasenCrawler/include/gameWorld.h
+
