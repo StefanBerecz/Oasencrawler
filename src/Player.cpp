@@ -16,7 +16,9 @@ Player::Player()
     this->m_hitPoints = 5;
     this->m_relicPointsTotal = 0;
     this->m_relicPointsStage = 0;
-    this->m_attackValue = 1;
+    this->m_strength = 1;
+    this->m_intelligence = 0;
+    this->m_agility = 0;
 }
 
 Player::~Player()
@@ -32,6 +34,21 @@ int Player::getHeroHealth()
 int Player::getHeroRelicPoints()
 {
     return this->m_relicPointsTotal;
+}
+
+int Player::getAgility()
+{
+    return this->m_agility;
+}
+
+int Player::getIntelligence()
+{
+    return this->m_intelligence;
+}
+
+int Player::getStrength()
+{
+    return this->m_strength;
 }
 
 // Neuer HP Wert
@@ -51,12 +68,60 @@ void Player::increaseRelics()
 {
     this->m_relicPointsTotal++;
     this->m_relicPointsStage++;
-    this->m_attackValue++;
+}
+
+void Player::findItem()
+{
+    int itemType = rand() % 3 + 1;
+    switch(itemType)
+    {
+        case 1:
+            // Agility
+            this->m_agility++;
+            break;
+        case 2:
+            // Intelligence
+            this->m_intelligence++;
+            break;
+        case 3:
+            // Strength
+            this->m_strength++;
+            break;
+    }
 }
 
 void Player::resetRelicPointsStage()
 {
     this->m_relicPointsStage = 0;
+}
+
+void Player::saveRoll()
+{
+    int attributeType = rand() % 3 + 1;
+    switch(attributeType)
+    {
+        case 1:
+            // Agility
+            if(this->getAgility() < 1)
+                this->setHeroHealth('m');
+            else
+                this->m_agility--;
+            break;
+        case 2:
+            // Intelligence
+            if(this->getIntelligence() < 1)
+                this->setHeroHealth('m');
+            else
+                this->m_intelligence--;
+            break;
+        case 3:
+            // Strength
+            if(this->getStrength() < 1)
+                this->setHeroHealth('m');
+            else
+                this->m_strength--;
+            break;
+    }
 }
 
 void Player::playerMovement(gameWorld& world, Monster& monster)
@@ -118,8 +183,14 @@ void Player::printPlayerStats(gameWorld& world)
         std::cout << GREEN;
     std::cout << m_hitPoints << COLOR_RESET << std::endl;
 
-    std::cout << YELLOW << "Attack value: " << COLOR_RESET
-              << GREEN << this->m_attackValue << COLOR_RESET << std::endl;
+    std::cout << YELLOW << "Potions of Strength: " << COLOR_RESET
+              << GREEN << this->m_strength << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Potions of Agility: " << COLOR_RESET
+              << GREEN << this->m_agility << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Potions of Intelligence: " << COLOR_RESET
+              << GREEN << this->m_intelligence << COLOR_RESET << std::endl;
 
     std::cout << YELLOW << "Relics Collected This Stage: " << COLOR_RESET
               << GREEN << m_relicPointsStage << "/"<< world.getRelicCount() << COLOR_RESET << std::endl;

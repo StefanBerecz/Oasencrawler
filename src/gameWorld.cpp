@@ -133,13 +133,16 @@ void gameWorld::newFieldEffect(char fieldType, Player& player)
     {
         case 'G':
             chanceForOuch = rand() % 6 + 1;
-            if(chanceForOuch == 1) player.setHeroHealth('m'); // m für Minus
+            if(chanceForOuch == 1)
+                player.saveRoll(); // Verlgeich mit Attributswert
             break;
         case 'B':
+            player.findItem();
             player.setHeroHealth('p'); // p für Plus
             break;
         case 'R':
             player.increaseRelics();
+            player.findItem();
             break;
         default:
             // zB bei empty field

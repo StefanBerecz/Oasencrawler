@@ -13,13 +13,18 @@ class Player
         // Getter
         int getHeroHealth();
         int getHeroRelicPoints();
+        int getAgility();
+        int getIntelligence();
+        int getStrength();
 
         // Setter
         void setHeroHealth(char plusOrMinus); // Plus & Minus
         void increaseRelics();
         void resetRelicPointsStage();
+        void findItem();
 
         // restliche Methoden
+        void saveRoll();
         void playerMovement(gameWorld& world, Monster& monster);
         void printPlayerStats(gameWorld& world);
 
@@ -27,9 +32,11 @@ class Player
         int m_hitPoints;
         int m_relicPointsTotal;
         int m_relicPointsStage;
-        int m_attackValue; // entspricht relicPointsTotal
-        int m_positionX;
-        int m_positionY;
+
+        // Attribute (können sinken)
+        int m_agility;
+        int m_intelligence;
+        int m_strength;
 };
 
 #endif // PLAYER_H
