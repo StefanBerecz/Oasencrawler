@@ -37,6 +37,9 @@
 *.cbp
 bin/
 
+# Submissions
+*.zip
+
 # DrawIO Files
 *.drawio
 *.bkp
