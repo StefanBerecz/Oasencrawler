@@ -15,6 +15,7 @@ class Player
         // Setter
         void setHeroHealth(char plusOrMinus); // Plus & Minus
         void increaseRelics();
+        void resetRelicPointsStage();
 
         // restliche Methoden
         void playerMovement(gameWorld& world);
@@ -22,10 +23,11 @@ class Player
 
     private:
         int m_hitPoints;
-        int m_relicPoints;
+        int m_relicPointsTotal;
+        int m_relicPointsStage;
+        int m_attackValue; // entspricht relicPointsTotal
         int m_positionX;
         int m_positionY;
-        void changePlayerPosition(char inputDirection, gameWorld& world);
 };
 
 #endif // PLAYER_H

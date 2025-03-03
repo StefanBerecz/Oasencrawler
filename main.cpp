@@ -7,10 +7,10 @@ int main()
 {
     srand(time(NULL));
     gameWorld world;
+    Player player;
+
     world.generateWorld();
     world.printWorld();
-
-    Player player;
     player.playerMovement(world);
     return 0;
 }

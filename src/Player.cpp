@@ -13,7 +13,8 @@ Player::Player()
 {
     //ctor
     this->m_hitPoints = 5;
-    this->m_relicPoints = 0;
+    this->m_relicPointsTotal = 0;
+    this->m_relicPointsStage = 0;
 }
 
 Player::~Player()
@@ -41,7 +42,14 @@ void Player::setHeroHealth(char plusOrMinus)
 
 void Player::increaseRelics()
 {
-    this->m_relicPoints++;
+    this->m_relicPointsTotal++;
+    this->m_relicPointsStage++;
+    this->m_attackValue++;
+}
+
+void Player::resetRelicPointsStage()
+{
+    this->m_relicPointsStage = 0;
 }
 
 void Player::playerMovement(gameWorld& world)
@@ -59,11 +67,13 @@ void Player::playerMovement(gameWorld& world)
             case 'a':
             case 's':
             case 'd':
-                std::cout << GREEN << "Move"<< COLOR_RESET <<std::endl;
-                changePlayerPosition(inputDirection, world);
+                world.changePlayerPosition(inputDirection, *this);
+                world.changeMonsterPosition();
                 break;
             case 'x':
-                std::cout << BLUE << "Spiel beendet" << COLOR_RESET <<std::endl;
+                system("clear");
+                std::cout << BLUE << "         Spiel beendet" << COLOR_RESET <<std::endl;
+                this->printPlayerStats(world);
                 return;
             default:
                 std::cout << RED << "INVALID INPUT!" << COLOR_RESET <<std::endl;
@@ -77,42 +87,9 @@ void Player::playerMovement(gameWorld& world)
             this->printPlayerStats(world);
             return;
         }
-        if(this->m_relicPoints == world.getRelicCount())
-        {
-            system("clear");
-            std::cout << YELLOW << "         VICTORY ACHIEVED" << COLOR_RESET << std::endl;
-            std::cout << std::endl;
-            this->printPlayerStats(world);
-            return;
-        }
+        if(this->m_relicPointsStage == world.getRelicCount())
+            world.newStage(*this);
     }
-}
-
-void Player::changePlayerPosition(char inputDirection, gameWorld& world)
-{
-    int currentHeroX = world.getHeroPositionX();
-    int currentHeroY = world.getHeroPositionY();
-    int newHeroX = currentHeroX;
-    int newHeroY = currentHeroY;
-
-    switch(inputDirection)
-    {
-        case 'w':
-            if(currentHeroX > 0) newHeroX = currentHeroX - 1;
-            break;
-        case 'a':
-            if (currentHeroY > 0) newHeroY = currentHeroY - 1;
-            break;
-        case 's':
-            if (currentHeroX < 4) newHeroX = currentHeroX + 1;
-            break;
-        case 'd':
-            if (currentHeroY < 4) newHeroY = currentHeroY + 1;
-            break;
-    }
-    world.setEmptyField(currentHeroX, currentHeroY); // Felder auf leer setzeb
-    world.newFieldEffect(world.getFieldType(newHeroX, newHeroY), *this); // Effekt der neuen Position
-    world.setHeroPosition(newHeroX, newHeroY); // Aktualisiert Spieler auf neue Position
 }
 
 void Player::printPlayerStats(gameWorld& world)
@@ -121,6 +98,9 @@ void Player::printPlayerStats(gameWorld& world)
     std::cout << GREEN  << "         PLAYER STATS             " << COLOR_RESET << std::endl;
     std::cout << BLUE   << "==================================" << COLOR_RESET << std::endl;
 
+    std::cout << YELLOW << "Current stage: " << COLOR_RESET
+              << GREEN << world.getStageCount() << COLOR_RESET << std::endl;
+
     std::cout << YELLOW << "Health: " << COLOR_RESET;
     if(m_hitPoints <= 2)
         std::cout << RED;
@@ -128,8 +108,11 @@ void Player::printPlayerStats(gameWorld& world)
         std::cout << GREEN;
     std::cout << m_hitPoints << COLOR_RESET << std::endl;
 
-    std::cout << YELLOW << "Relics Collected: " << COLOR_RESET
-              << GREEN << m_relicPoints << "/"<< world.getRelicCount() << COLOR_RESET << std::endl;
+    std::cout << YELLOW << "Relics Collected This Stage: " << COLOR_RESET
+              << GREEN << m_relicPointsStage << "/"<< world.getRelicCount() << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Relics Collected Total: " << COLOR_RESET
+              << GREEN << m_relicPointsTotal << COLOR_RESET << std::endl;
 
     std::cout << BLUE   << "==================================" << COLOR_RESET << std::endl;
 }
