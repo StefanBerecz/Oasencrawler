@@ -1,5 +1,6 @@
 #include "../include/Player.h"
 #include "../include/gameWorld.h"
+#include "../include/Monster.h"
 #include <iostream>
 
 // ANSI COLORS siehe gameWorld.cpp
@@ -15,6 +16,7 @@ Player::Player()
     this->m_hitPoints = 5;
     this->m_relicPointsTotal = 0;
     this->m_relicPointsStage = 0;
+    this->m_attackValue = 1;
 }
 
 Player::~Player()
@@ -25,6 +27,11 @@ Player::~Player()
 int Player::getHeroHealth()
 {
     return this->m_hitPoints;
+}
+
+int Player::getHeroRelicPoints()
+{
+    return this->m_relicPointsTotal;
 }
 
 // Neuer HP Wert
@@ -52,12 +59,14 @@ void Player::resetRelicPointsStage()
     this->m_relicPointsStage = 0;
 }
 
-void Player::playerMovement(gameWorld& world)
+void Player::playerMovement(gameWorld& world, Monster& monster)
 {
     char inputDirection;
     while(1)
     {
         this->printPlayerStats(world);
+        monster.printMonsterStats();
+        world.resetFightsThisRound();
         std::cout<<"Bewegen mit WASD, BEENDEN mit X"<<std::endl;
         std::cin>> inputDirection;
         inputDirection = std::tolower(inputDirection); // Kleinbuchstaben
@@ -67,28 +76,29 @@ void Player::playerMovement(gameWorld& world)
             case 'a':
             case 's':
             case 'd':
-                world.changePlayerPosition(inputDirection, *this);
-                world.changeMonsterPosition();
+                world.changePlayerPosition(inputDirection, *this, monster); // verändert auch Position des Monsters
                 break;
             case 'x':
                 system("clear");
                 std::cout << BLUE << "         Spiel beendet" << COLOR_RESET <<std::endl;
                 this->printPlayerStats(world);
+                monster.printMonsterStats();
                 return;
             default:
                 std::cout << RED << "INVALID INPUT!" << COLOR_RESET <<std::endl;
         }
-        world.printWorld();
+        world.printWorld(monster);
         if(this->m_hitPoints <= 0)
         {
             system("clear");
             std::cout << RED << "            YOU DIED" << COLOR_RESET <<std::endl;
             std::cout << std::endl;
             this->printPlayerStats(world);
+            monster.printMonsterStats();
             return;
         }
         if(this->m_relicPointsStage == world.getRelicCount())
-            world.newStage(*this);
+            world.newStage(*this, monster);
     }
 }
 
@@ -107,6 +117,9 @@ void Player::printPlayerStats(gameWorld& world)
     else
         std::cout << GREEN;
     std::cout << m_hitPoints << COLOR_RESET << std::endl;
+
+    std::cout << YELLOW << "Attack value: " << COLOR_RESET
+              << GREEN << this->m_attackValue << COLOR_RESET << std::endl;
 
     std::cout << YELLOW << "Relics Collected This Stage: " << COLOR_RESET
               << GREEN << m_relicPointsStage << "/"<< world.getRelicCount() << COLOR_RESET << std::endl;

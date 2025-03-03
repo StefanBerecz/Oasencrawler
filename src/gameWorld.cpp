@@ -1,5 +1,6 @@
 #include "../include/gameWorld.h"
 #include "../include/Player.h"
+#include "../include/Monster.h"
 #include <cstdlib> // für rand()
 #include <stdlib.h> // für system("clear")
 #include <iostream>
@@ -28,7 +29,7 @@ gameWorld::gameWorld()
     this->m_wellField     = 'B'; // "Brunnen"
     this->m_relicField    = 'R'; // "Relikt"
     this->m_heroField     = '@'; // Spieler Symbol
-    this->m_monsterField = '#'; // Monster Symbol
+    this->m_monsterField = 0; // Monster Symbol
 
     // Position des Spielers
     this->m_heroPositionX = 0;
@@ -37,6 +38,7 @@ gameWorld::gameWorld()
     this->m_monsterPositionX = 3;
     this->m_monsterPositionY = 3;
     this->m_stageCount = 0;
+    this->m_fightsThisRound = 0;
 }
 
 gameWorld::~gameWorld()
@@ -117,21 +119,24 @@ void gameWorld::setEmptyField(int oldX, int oldY)
     this->m_gameWorld[oldX][oldY] = this->m_emptyField;
 }
 
+// Resettet Anzahl der Fights
+ void gameWorld::resetFightsThisRound()
+ {
+     this->m_fightsThisRound++;
+ }
+
 // Effekt des neuen Feldes
 void gameWorld::newFieldEffect(char fieldType, Player& player)
 {
-    char healthEffect; // p für Plus, m für Minus
     int chanceForOuch;
     switch(fieldType)
     {
         case 'G':
             chanceForOuch = rand() % 6 + 1;
-            healthEffect = 'm';
-            if(chanceForOuch == 1) player.setHeroHealth(healthEffect);
+            if(chanceForOuch == 1) player.setHeroHealth('m'); // m für Minus
             break;
         case 'B':
-            healthEffect = 'p';
-            player.setHeroHealth(healthEffect);
+            player.setHeroHealth('p'); // p für Plus
             break;
         case 'R':
             player.increaseRelics();
@@ -143,7 +148,7 @@ void gameWorld::newFieldEffect(char fieldType, Player& player)
 }
 
 // Generiert Gameworld und füllt Felder
-void gameWorld::generateWorld()
+void gameWorld::generateWorld(Monster& monster)
 {
     // Variable = rand() % 10 + 1; fuer Zahl zwischen 1 - 10
     int randomField;
@@ -178,9 +183,10 @@ void gameWorld::generateWorld()
                     break;
                 case 10:
                     // Relikt Feld
-                    if(i != this->m_heroPositionX || j != this->m_heroPositionY)
+                    if (!((i == this->m_heroPositionX && j == this->m_heroPositionY) ||
+                          (i == this->m_monsterPositionX && j == this->m_monsterPositionY)))
                     {
-                        this->m_gameWorld[i][j] = this->m_relicField; // Sonst kann auf 0,0 Relikt sein
+                        this->m_gameWorld[i][j] = this->m_relicField; // weder Held noch Monster auf dem Feld
                         this->m_relicCount++;
                     }
                     break;
@@ -191,6 +197,7 @@ void gameWorld::generateWorld()
     {
         this->generateExtraRelic(); // Falls zu wenige Relikte
     }
+    this->increaseDifficulty(monster);
 }
 
 void gameWorld::generateExtraRelic()
@@ -206,23 +213,29 @@ void gameWorld::generateExtraRelic()
         x = rand() % 5;
         y = rand() % 5;
     }
-    this->m_gameWorld[x][y] = this->m_relicField;
     this->m_gameWorld[y][x] = this->m_relicField;
-    this->m_relicCount = 2;
+    this->m_relicCount = 1;
+}
+
+// Schwierigkeitsgrad erhöhen
+void gameWorld::increaseDifficulty(Monster& monster)
+{
+    monster.increaseMonsterDifficulty(*this);
+    this->m_monsterField++;
 }
 
 // Generiert neue Stage
-void gameWorld::newStage(Player& player)
+void gameWorld::newStage(Player& player, Monster& monster)
 {
     system("clear");
-    this->generateWorld();
-    this->printWorld();
+    this->generateWorld(monster);
+    this->printWorld(monster);
     player.resetRelicPointsStage();
 }
 
 
 // Printet Gameworld in Konsole
-void gameWorld::printWorld()
+void gameWorld::printWorld(Monster& monster)
 {
     system("clear"); // cleart die Konsole
     for (int i = 0; i < 5; i++)
@@ -233,7 +246,7 @@ void gameWorld::printWorld()
             {
                 std::cout << GREEN << this->m_heroField << COLOR_RESET;
             }
-            else if(i == this->getMonsterPositionX() && j == this->getMonsterPositionY())
+            else if(i == this->getMonsterPositionX() && j == this->getMonsterPositionY() && (monster.getMonsterHealth() > 0))
             {
                 std::cout << YELLOW << this->m_monsterField << COLOR_RESET;
             }
@@ -264,7 +277,7 @@ void gameWorld::printWorld()
     }
 }
 
-void gameWorld::changePlayerPosition(char inputDirection, Player& player)
+void gameWorld::changePlayerPosition(char inputDirection, Player& player, Monster& monster)
 {
     int currentHeroX = this->getHeroPositionX();
     int currentHeroY = this->getHeroPositionY();
@@ -274,7 +287,7 @@ void gameWorld::changePlayerPosition(char inputDirection, Player& player)
     switch(inputDirection)
     {
         case 'w':
-            if(currentHeroX > 0) newHeroX = currentHeroX - 1;
+            if (currentHeroX > 0) newHeroX = currentHeroX - 1;
             break;
         case 'a':
             if (currentHeroY > 0) newHeroY = currentHeroY - 1;
@@ -286,13 +299,39 @@ void gameWorld::changePlayerPosition(char inputDirection, Player& player)
             if (currentHeroY < 4) newHeroY = currentHeroY + 1;
             break;
     }
+    //Prüfen ob Held auf Monsterfeld geht
+    if(newHeroX == this->m_monsterPositionX && newHeroY == this->m_monsterPositionY && (monster.getMonsterHealth() > 1))
+    {
+        this->heroMonsterEpicClash(player, monster);
+        return;
+    }
     this->setEmptyField(currentHeroX, currentHeroY); // Felder auf leer setzen
     this->newFieldEffect(this->getFieldType(newHeroX, newHeroY), player); // Effekt der neuen Position
     this->setHeroPosition(newHeroX, newHeroY); // Aktualisiert Spieler auf neue Position
+    this->changeMonsterPosition(player, monster); // Bewegt das Monster
 }
 
-void gameWorld::changeMonsterPosition()
+void gameWorld::heroMonsterEpicClash(Player& player, Monster& monster)
 {
+    if(this->m_fightsThisRound == 1 || (monster.getMonsterHealth() < 1))
+        return;
+    std::cout << RED << "Das Monster schmeckt Aua" << COLOR_RESET << std::endl;
+    for(int i = 0; i < monster.getMonsterDamage(); i++)
+    {
+        player.setHeroHealth('m');
+    }
+    for(int i = 0; i < player.getHeroRelicPoints(); i++)
+    {
+        monster.decreaseMonsterHealth();
+    }
+    this->m_fightsThisRound = 1;
+}
+
+void gameWorld::changeMonsterPosition(Player& player, Monster& monster)
+{
+    if(monster.getMonsterHealth() < 1)
+        return;
+
     int currentMonsterX = this->getMonsterPositionX();
     int currentMonsterY = this->getMonsterPositionY();
     int newMonsterX = currentMonsterX;
@@ -313,6 +352,11 @@ void gameWorld::changeMonsterPosition()
         case 4:
             if (currentMonsterY < 4) newMonsterY = currentMonsterY + 1;
             break;
+    }
+     if(newMonsterX == this->m_heroPositionX && newMonsterY == this->m_heroPositionY)
+    {
+        this->heroMonsterEpicClash(player, monster);
+        return;
     }
     this->setMonsterPosition(newMonsterX, newMonsterY); // Aktualisiert Monster  auf neue Position
 }

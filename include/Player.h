@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 class gameWorld; // Vorwärtsdeklaration
+class Monster;
 
 class Player
 {
@@ -11,6 +12,7 @@ class Player
 
         // Getter
         int getHeroHealth();
+        int getHeroRelicPoints();
 
         // Setter
         void setHeroHealth(char plusOrMinus); // Plus & Minus
@@ -18,7 +20,7 @@ class Player
         void resetRelicPointsStage();
 
         // restliche Methoden
-        void playerMovement(gameWorld& world);
+        void playerMovement(gameWorld& world, Monster& monster);
         void printPlayerStats(gameWorld& world);
 
     private:
