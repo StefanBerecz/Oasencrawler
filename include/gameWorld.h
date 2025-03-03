@@ -8,7 +8,7 @@ class gameWorld
 {
     public:
         gameWorld();
-        ~gameWorld();
+
         void generateWorld(Monster& monster);
         void printWorld(Monster& monster);
 
@@ -48,9 +48,9 @@ class gameWorld
 
         // Arten von Feldern
         char m_emptyField; // nichts passiert
-        char m_dangerousField; // mit 1/6 wsl Verletzt
-        char m_wellField; // ausruhen
-        char m_relicField; // Relikt gefunden
+        char m_dangerousField; // mit 1/6 wsl Potion/HP verlieren
+        char m_wellField; // Ausruhen & Item
+        char m_relicField; // Relikt + Item gefunden
         char m_heroField;  // Symbol für Held
         int m_monsterField; // Symbol für Monster
 };

@@ -21,11 +21,6 @@ Player::Player()
     this->m_agility = 0;
 }
 
-Player::~Player()
-{
-    //dtor
-}
-
 int Player::getHeroHealth()
 {
     return this->m_hitPoints;

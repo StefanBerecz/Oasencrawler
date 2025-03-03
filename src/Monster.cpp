@@ -16,11 +16,6 @@ Monster::Monster()
     this->m_monsterHealth = 0;
 }
 
-Monster::~Monster()
-{
-    //dtor
-}
-
 void Monster::increaseMonsterDifficulty(gameWorld& world)
 {
     this->m_monsterDamage++;

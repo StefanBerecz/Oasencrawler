@@ -8,7 +8,6 @@ class Player
 {
     public:
         Player();
-        ~Player();
 
         // Getter
         int getHeroHealth();

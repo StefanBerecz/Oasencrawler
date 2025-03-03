@@ -41,11 +41,6 @@ gameWorld::gameWorld()
     this->m_fightsThisRound = 0;
 }
 
-gameWorld::~gameWorld()
-{
-    //dtor
-}
-
 // Position des Helden
 int gameWorld::getHeroPositionX() const
 {

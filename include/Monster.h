@@ -6,7 +6,6 @@ class Monster
 {
     public:
         Monster();
-        ~Monster();
 
         // Setter
         void increaseMonsterDifficulty(gameWorld& world);
