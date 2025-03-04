@@ -298,7 +298,7 @@ void gameWorld::changePlayerPosition(char inputDirection, Player& player, Monste
             break;
     }
     //Prüfen ob Held auf Monsterfeld geht
-    if(newHeroX == this->m_monsterPositionX && newHeroY == this->m_monsterPositionY && (monster.getMonsterHealth() > 1))
+    if(newHeroX == this->m_monsterPositionX && newHeroY == this->m_monsterPositionY && (monster.getMonsterHealth() >= 1))
     {
         this->heroMonsterEpicClash(player, monster);
         return;
@@ -313,12 +313,12 @@ void gameWorld::heroMonsterEpicClash(Player& player, Monster& monster)
 {
     if(this->m_fightsThisRound == 1 || (monster.getMonsterHealth() < 1))
         return;
-    std::cout << RED << "Das Monster schmeckt Aua" << COLOR_RESET << std::endl;
+//    std::cout << RED << "Das Monster schmeckt Aua" << COLOR_RESET << std::endl;
     for(int i = 0; i < monster.getMonsterDamage(); i++)
     {
         player.setHeroHealth('m');
     }
-    for(int i = 0; i < player.getHeroRelicPoints(); i++)
+    for(int i = 0; i < player.getStrength(); i++)
     {
         monster.decreaseMonsterHealth();
     }
