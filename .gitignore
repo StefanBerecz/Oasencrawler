@@ -34,9 +34,13 @@
 # Code Blocks Files
 *.depend
 bin/
+*.cbp
+*.layout
 
-# Submissions
+
+# Submissions & Copyright
 *.zip
+Oasencrawler.pdf
 
 # DrawIO Files
 *.drawio
