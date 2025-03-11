@@ -1,4 +1,4 @@
-#Oasencrawler
+# Oasencrawler
 
 *Oasencrawler* ist ein konsolenbasiertes Roguelike, das in einer zufällig generierten 5x5-Welt spielt. Der Spieler muss alle Relikte sammeln, während er Gefahren meistert und einem sich bewegenden Monster ausweicht. Das Spiel wird mit jeder Stufe schwieriger, indem das Monster stärker und die Fallen gefährlicher werden.
 Features:
@@ -11,3 +11,21 @@ Features:
 - Monster-KI, die den Spieler jagt und mit jeder Stufe stärker wird
 
 Ziel ist es, alle Relikte einer Stufe zu sammeln und dabei nicht zu sterben.
+
+## Verwendung
+
+1. **Repositoy klonen**:
+    ```sh
+    git clone https://github.com/StefanBerecz/Oasencrawler
+    cd Oasencrawler
+    ```
+
+2. **Programm kompilieren**:
+    ```sh
+    g++ -o Oasencrawler main.cpp src/*.cpp -I include   
+    ```
+
+3. **Programm ausführen**:
+    ```sh
+    ./Oasencrawler
+    ```
